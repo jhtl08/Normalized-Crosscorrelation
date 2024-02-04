@@ -11,7 +11,6 @@ using namespace std;
 Signal::Signal()
 {
   startIndex = 0;
-  endIndex = 1;
   duration = 1;
   elements = new double[1];
   elements[0] = 0;
@@ -22,7 +21,6 @@ int inputDuration)
 {
   startIndex = inputStart;
   duration = inputDuration;
-  endIndex = startIndex + duration;
   elements=new double[duration];
   for (int i=0; i<duration; i++)
   {
@@ -37,7 +35,7 @@ void Signal::SignalImport(string fileName)
   ifstream isignalFile;
   isignalFile.open(fileName);
   if (!isignalFile.is_open())
-  {
+  {//fail import feedback
     cout<<"Unable to import a valid signal from "<<fileName<<endl;
      return;
   }
@@ -96,9 +94,9 @@ void Signal::SignalImport(string fileName)
     elements[i]=vect_elements[i];
   }
 
+//successful import feedback
   cout<<"Signal with start index "<<startIndex<<", duration "<<
   duration<<", imported from "<<fileName<<endl;
-  cout<<"vector[0]= "<<vect_elements[0]<<endl;
 
   isignalFile.close();
 }
@@ -110,7 +108,7 @@ void Signal::SignalExport(string fileName)
   ofstream osignalFile;
   osignalFile.open(fileName);
   if (!osignalFile.is_open())
-  {
+  {//fail export feedback
     cout<<"Unable to export signal with start index "<<startIndex<<
   ", duration "<<duration<<", to "<<fileName<<endl;
     return;
@@ -123,6 +121,8 @@ void Signal::SignalExport(string fileName)
     osignalFile<<elements[i]<<"\n";
   }
   osignalFile.close();
+
+  //successful exporting feedvack
   cout<<"Crosscorrelation signal with start index "<<startIndex<<
   ", duration "<<duration<<", exported to "<<fileName<<endl;
 }

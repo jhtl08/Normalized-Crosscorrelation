@@ -14,7 +14,6 @@ class Signal
 {
   private:
     int startIndex;
-    int endIndex;
     int duration;
     double * elements;
 
