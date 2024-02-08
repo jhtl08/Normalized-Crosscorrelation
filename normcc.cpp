@@ -186,7 +186,7 @@ double Signal::computeXcorr(Signal x, Signal y, int lag)
 }
 
 Signal Signal::listXcorr(Signal x, Signal y) {
-
+    // Normalize signals
     double xSum = 0;
     for (int c = 0; c < x.duration; c++)
     {
@@ -213,6 +213,16 @@ Signal Signal::listXcorr(Signal x, Signal y) {
       y.elements[t] = y.elements[t] - yAverage;
     }
 
+    int startIndex = -(y.duration - 1);
+    cout << "Start Index: " << startIndex << endl;
+
+    int endIndex = x.duration - 1;
+    cout << "End Index: " << endIndex << endl;
+
+    int duration = endIndex - startIndex + 1;
+    cout << "Duration: " << duration << endl;
+
+
     // Create a new Signal object to store the cross-correlation results
     Signal result;
     result.elements = new double[duration];
@@ -221,11 +231,12 @@ Signal Signal::listXcorr(Signal x, Signal y) {
     result.endIndex = endIndex;
 
     for (int i = 0; i < duration; i++) {
-        // Store each cross-correlation result in the 'elements' array of the 'result' Signal object
+        // Compute cross-correlation for the original signals x and y
         result.elements[i] = computeXcorr(x, y, i + startIndex)/sqrt(computeXcorr(x, x, 0)*computeXcorr(y, y, 0));
     }
 
     return result;
 }
+
 
 
