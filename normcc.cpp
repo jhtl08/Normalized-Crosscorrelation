@@ -5,6 +5,7 @@
 
 #include "normcc.h"
 #include <sstream>
+#include <cmath>
 
 using namespace std;
 
@@ -130,7 +131,7 @@ double Signal::computeXcorr(Signal x, Signal y, int lag)
 {
   int xcorrEnd;
   int xcorrStart;
-  int sum = 0;
+  double sum = 0;
 
   y.startIndex += lag;
   y.endIndex += lag;
@@ -184,35 +185,47 @@ double Signal::computeXcorr(Signal x, Signal y, int lag)
   return sum; // total sum is basically r_xy
 }
 
-Signal Signal::listXcorr(Signal x, Signal y)
-{
-  int lastEndIndex;
-  int lagdependentStarty;
+Signal Signal::listXcorr(Signal x, Signal y) {
 
-  lagdependentStarty = x.startIndex - y.duration;
-  lastEndIndex = x.endIndex + y.duration;
+    double xSum = 0;
+    for (int c = 0; c < x.duration; c++)
+    {
+      xSum += x.elements[c];
+    }
+    double xAverage;
+    xAverage = xSum/x.duration;
 
-  cout << "y =" << lagdependentStarty << endl;
+    double ySum = 0;
+    for (int c = 0; c < y.duration; c++)
+    {
+      ySum += y.elements[c];
+    }
+    double yAverage;
+    yAverage = ySum/y.duration;
 
-  int r_xyDuration = lastEndIndex - lagdependentStarty + 1;
+    for (int t = 0; t < x.duration; t++)
+    {
+      x.elements[t] = x.elements[t] - xAverage;
+    }
 
-  // assign output attributes
-  duration = r_xyDuration;
-  startIndex = lagdependentStarty;
-  endIndex = lastEndIndex;
+    for (int t = 0; t < y.duration; t++)
+    {
+      y.elements[t] = y.elements[t] - yAverage;
+    }
 
-  cout << "x.endIndex = " << x.endIndex << endl;
-  cout << "lagdepstarty = " << lagdependentStarty << endl;
-  cout << "r duration = " << r_xyDuration << endl;
+    // Create a new Signal object to store the cross-correlation results
+    Signal result;
+    result.elements = new double[duration];
+    result.startIndex = startIndex;
+    result.duration = duration;
+    result.endIndex = endIndex;
 
-  elements = new double[r_xyDuration];
-  int i = 0;
-  for (lagdependentStarty; lagdependentStarty <= lastEndIndex;
-       lagdependentStarty++)
-  {
-    elements[i] =
-        computeXcorr(x, y, lagdependentStarty);
-    i++;
-    cout << "y = " << lagdependentStarty << " e[i] = " << elements[i] << " xcomputed = " << computeXcorr(x, y, lagdependentStarty) << endl;
-  }
+    for (int i = 0; i < duration; i++) {
+        // Store each cross-correlation result in the 'elements' array of the 'result' Signal object
+        result.elements[i] = computeXcorr(x, y, i + startIndex)/sqrt(computeXcorr(x, x, 0)*computeXcorr(y, y, 0));
+    }
+
+    return result;
 }
+
+

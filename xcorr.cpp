@@ -27,8 +27,7 @@ int main(int argc, char *argv[])
   cout << endl;
 
   // Compute for list of r_xy to be contained in Signal object
-  Signal result;
-  result.listXcorr(x, y);
+  Signal result =result.listXcorr(x, y);
 
   // Export result
   result.SignalExport(outputFileName);
