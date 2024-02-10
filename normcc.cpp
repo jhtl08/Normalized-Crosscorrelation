@@ -14,8 +14,13 @@ Signal::Signal()
   startIndex = 0;
   duration = 1;
   endIndex = 0;
-  elements = new double[1];
-  elements[0] = 0;
+  raw = new double[1];
+  raw[0] = 0;
+  data = new double[1];
+  data[0] = 0;
+  normXcorrData = new double[1];
+  normXcorrData[0] = 0;
+
 }
 
 Signal::Signal(double *signalArray, int inputStart,
@@ -24,10 +29,10 @@ Signal::Signal(double *signalArray, int inputStart,
   startIndex = inputStart;
   duration = inputDuration;
   endIndex = duration + startIndex + 1;
-  elements = new double[duration];
+  raw = new double[duration];
   for (int i = 0; i < duration; i++)
   {
-    elements[i] = signalArray[i];
+    raw[i] = signalArray[i];
   }
 }
 
@@ -92,10 +97,10 @@ void Signal::SignalImport(string fileName)
 
   // convert vector to array
   // allocate memory
-  elements = new double[duration];
+  raw = new double[duration];
   for (int i = 0; i < duration; i++)
   {
-    elements[i] = vect_elements[i];
+    raw[i] = vect_elements[i];
   }
 
   // successful import feedback
@@ -119,12 +124,41 @@ void Signal::SignalExport(string fileName)
   osignalFile << startIndex << " ";
   for (int i = 0; i < duration; i++)
   {
-    osignalFile << elements[i] << "\n";
+    osignalFile << normXcorrData[i] << "\n";
   }
   osignalFile.close();
 
   // successful exporting feedvack
-  cout << "Crosscorrelation signal with start index " << startIndex << ", duration " << duration << ", exported to " << fileName << endl;
+  cout << "Normalized Crosscorrelation signal with start index " << startIndex << ", duration " << duration << ", exported to " << fileName << endl;
+  cout << endl;
+}
+
+void Signal::SignalcmdPrint()
+{
+  if(duration<=20)
+  {
+    cout << "Normalized Crosscorrelation: " << endl;
+    for (int i = 0; i < duration; i++)
+    {
+      cout << "p_xy(" << i + startIndex << ") = " << normXcorrData[i] << endl;
+    }
+    cout << endl;
+  }
+}
+
+void Signal::SignalData()
+{
+  double Sum = 0;
+  for (int i = 0; i < duration; i++)
+  {
+    Sum += raw[i];
+  }
+  
+  double Average = Sum/duration;
+  for (int i = 0; i < duration; i++)
+  {
+    data[i] = raw[i] - Average;
+  }
 }
 
 double Signal::computeXcorr(Signal x, Signal y, int lag)
@@ -154,7 +188,7 @@ double Signal::computeXcorr(Signal x, Signal y, int lag)
     xcorrStart = y.startIndex;
   }
 
-  int xcorrDuration = xcorrEnd - xcorrStart + 1;
+  int xcorrDuration = xcorrEnd - xcorrStart - 1;
 
   int i = 0;
   int j = 0;
@@ -176,7 +210,7 @@ double Signal::computeXcorr(Signal x, Signal y, int lag)
     }
     else
     {
-      sum += x.elements[i] * y.elements[j];
+      sum += x.data[i] * y.data[j];
       i++;
       j++;
     }
@@ -187,56 +221,24 @@ double Signal::computeXcorr(Signal x, Signal y, int lag)
 
 Signal Signal::listXcorr(Signal x, Signal y) {
     // Normalize signals
-    double xSum = 0;
-    for (int c = 0; c < x.duration; c++)
-    {
-      xSum += x.elements[c];
-    }
-    double xAverage;
-    xAverage = xSum/x.duration;
 
-    double ySum = 0;
-    for (int c = 0; c < y.duration; c++)
-    {
-      ySum += y.elements[c];
-    }
-    double yAverage;
-    yAverage = ySum/y.duration;
-
-    for (int t = 0; t < x.duration; t++)
-    {
-      x.elements[t] = x.elements[t] - xAverage;
-    }
-
-    for (int t = 0; t < y.duration; t++)
-    {
-      y.elements[t] = y.elements[t] - yAverage;
-    }
-
-    int startIndex = -(y.duration - 1);
-    cout << "Start Index: " << startIndex << endl;
-
-    int endIndex = x.duration - 1;
-    cout << "End Index: " << endIndex << endl;
-
-    int duration = endIndex - startIndex + 1;
-    cout << "Duration: " << duration << endl;
-
-
-    // Create a new Signal object to store the cross-correlation results
     Signal result;
-    result.elements = new double[duration];
-    result.startIndex = startIndex;
-    result.duration = duration;
-    result.endIndex = endIndex;
+    result.normXcorrData = new double[duration];
+    result.normXcorrData[0] = 0;
+    result.startIndex = -(y.duration - 1);
+    result.duration = endIndex - startIndex + 1;
+    result.endIndex = x.duration - 1;
 
-    for (int i = 0; i < duration; i++) {
+    x.SignalData();
+    y.SignalData();
+
+    for (int i = 0; i < result.duration; i++) {
         // Compute cross-correlation for the original signals x and y
-        result.elements[i] = computeXcorr(x, y, i + startIndex)/sqrt(computeXcorr(x, x, 0)*computeXcorr(y, y, 0));
+        double xcorr_xy = computeXcorr(x, y, i + result.startIndex);
+        double xcorr_xx = computeXcorr(x, x, 0);
+        double xcorr_yy = computeXcorr(y, y, 0);
+        result.normXcorrData[i] = xcorr_xy / sqrt(xcorr_xx * xcorr_yy);
     }
 
     return result;
 }
-
-
-

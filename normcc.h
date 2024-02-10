@@ -16,7 +16,9 @@ private:
   int startIndex;
   int duration;
   int endIndex;
-  double *elements;
+  double * raw;
+  double * data;
+  double * normXcorrData;
 
 public:
   // empty constructor
@@ -33,6 +35,8 @@ public:
 
   // function to print in command line when duration<20
   void SignalcmdPrint();
+
+  void SignalData();
 
   // crosscorrelation function
   double computeXcorr(Signal x, Signal y, int lag);
