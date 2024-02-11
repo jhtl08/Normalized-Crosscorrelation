@@ -1,7 +1,7 @@
 // normcc.h
 // Kyle Coloma, Jason Lorenzo
 // ENGG 151.01-A
-// February 5, 2022
+// February 11, 2022
 
 #ifndef NORMCCHEADERDEF
 #define NORMCCHEADERDEF
@@ -40,7 +40,10 @@ public:
   double computeXcorr(Signal x, Signal y, int lag);
 
   // normalized crosscorrelation function
-  Signal listXcorr(Signal x, Signal y);
+  Signal normalizedXCorr(Signal x, Signal y);
 };
 
 #endif
+
+
+

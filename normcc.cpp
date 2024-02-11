@@ -15,27 +15,24 @@ Signal::Signal()
   duration = 1;
   endIndex = 0;
   raw = new double[1];
-  raw[0] = 0;
+  raw[0] = 0.0;
   data = new double[1];
-  data[0] = 0;
+  data[0] = 0.0;
   normXcorrData = new double[1];
-  normXcorrData[0] = 0;
+  normXcorrData[0] = 0.0;
 
 }
 
 void Signal::SignalImport(string fileName)
 {
-
   // opens and checks the files
   ifstream isignalFile;
   isignalFile.open(fileName);
-
   if (!isignalFile.is_open())
   { // fail import feedback
     cout << "Unable to import a valid signal from " << fileName << endl;
     return;
   }
-
   // parsing elements to vector
   string line;
   getline(isignalFile, line);
@@ -62,6 +59,7 @@ void Signal::SignalImport(string fileName)
     cout << "Encountered nonfloat as first element in " << fileName
          << "\nNo elements imported.";
   }
+  
   // for succeeding numbers
   while (getline(isignalFile, line))
   {
@@ -141,6 +139,10 @@ void Signal::SignalcmdPrint()
     }
     cout << endl;
   }
+  else
+  {
+    
+  }
 }
 
 void Signal::SignalData()
@@ -216,13 +218,14 @@ double Signal::computeXcorr(Signal x, Signal y, int lag)
   return sum; // total sum is basically r_xy
 }
 
-Signal Signal::listXcorr(Signal x, Signal y) {
+Signal Signal::normalizedXCorr(Signal x, Signal y) {
+  
     Signal result;
-    result.normXcorrData = new double[duration];
-    result.normXcorrData[0] = 0;
     result.startIndex = -(y.duration - 1);
     result.endIndex = x.duration - 1;
     result.duration = endIndex - startIndex + 1;
+    result.normXcorrData = new double[result.duration];
+    result.normXcorrData[0] = 0;
 
     for (int i = 0; i < result.duration; i++) {
         // Compute cross-correlation for the signals x and y
@@ -234,3 +237,4 @@ Signal Signal::listXcorr(Signal x, Signal y) {
 
     return result;
 }
+

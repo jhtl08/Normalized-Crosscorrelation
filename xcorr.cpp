@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
   y.SignalData();
 
   // Compute for list of r_xy to be contained in Signal object
-  Signal result = result.listXcorr(x, y);
+  Signal result = result.normalizedXCorr(x, y);
   cout << endl;
 
   // Checks if the duration is valid for printing
@@ -47,3 +47,4 @@ int main(int argc, char *argv[])
 
   return 0;
 }
+
