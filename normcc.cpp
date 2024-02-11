@@ -23,25 +23,13 @@ Signal::Signal()
 
 }
 
-Signal::Signal(double *signalArray, int inputStart,
-               int inputDuration)
-{
-  startIndex = inputStart;
-  duration = inputDuration;
-  endIndex = duration + startIndex + 1;
-  raw = new double[duration];
-  for (int i = 0; i < duration; i++)
-  {
-    raw[i] = signalArray[i];
-  }
-}
-
 void Signal::SignalImport(string fileName)
 {
 
   // opens and checks the files
   ifstream isignalFile;
   isignalFile.open(fileName);
+
   if (!isignalFile.is_open())
   { // fail import feedback
     cout << "Unable to import a valid signal from " << fileName << endl;
@@ -84,7 +72,9 @@ void Signal::SignalImport(string fileName)
     }
     else
     { // when encountering nonfloat or eof
-      cout << "Parsing of input from " << fileName << " stopped at duration " << vect_elements.size() << " due to nonfloat/new line." << endl;
+      cout << "Parsing of input from " << fileName 
+      << " stopped at duration " << vect_elements.size() 
+      << " due to nonfloat/new line." << endl;
       break;
     }
   }
@@ -104,7 +94,9 @@ void Signal::SignalImport(string fileName)
   }
 
   // successful import feedback
-  cout << "Signal with start index " << startIndex << ", duration " << duration << ", imported from " << fileName << endl;
+  cout << "Signal with start index " << startIndex 
+  << ", duration " << duration << ", imported from " 
+  << fileName << endl;
 
   isignalFile.close();
 }
@@ -116,7 +108,9 @@ void Signal::SignalExport(string fileName)
   osignalFile.open(fileName);
   if (!osignalFile.is_open())
   { // fail export feedback
-    cout << "Unable to export signal with start index " << startIndex << ", duration " << duration << ", to " << fileName << endl;
+    cout << "Unable to export signal with start index " 
+    << startIndex << ", duration " << duration << ", to " 
+    << fileName << endl;
     return;
   }
 
@@ -129,7 +123,9 @@ void Signal::SignalExport(string fileName)
   osignalFile.close();
 
   // successful exporting feedvack
-  cout << "Normalized Crosscorrelation signal with start index " << startIndex << ", duration " << duration << ", exported to " << fileName << endl;
+  cout << "Normalized Crosscorrelation signal with start index " 
+  << startIndex << ", duration " << duration << ", exported to " 
+  << fileName << endl;
   cout << endl;
 }
 
@@ -140,7 +136,8 @@ void Signal::SignalcmdPrint()
     cout << "Normalized Crosscorrelation: " << endl;
     for (int i = 0; i < duration; i++)
     {
-      cout << "p_xy(" << i + startIndex << ") = " << normXcorrData[i] << endl;
+      cout << "p_xy(" << i + startIndex << ") = " 
+      << normXcorrData[i] << endl;
     }
     cout << endl;
   }
@@ -220,20 +217,15 @@ double Signal::computeXcorr(Signal x, Signal y, int lag)
 }
 
 Signal Signal::listXcorr(Signal x, Signal y) {
-    // Normalize signals
-
     Signal result;
     result.normXcorrData = new double[duration];
     result.normXcorrData[0] = 0;
     result.startIndex = -(y.duration - 1);
-    result.duration = endIndex - startIndex + 1;
     result.endIndex = x.duration - 1;
-
-    x.SignalData();
-    y.SignalData();
+    result.duration = endIndex - startIndex + 1;
 
     for (int i = 0; i < result.duration; i++) {
-        // Compute cross-correlation for the original signals x and y
+        // Compute cross-correlation for the signals x and y
         double xcorr_xy = computeXcorr(x, y, i + result.startIndex);
         double xcorr_xx = computeXcorr(x, x, 0);
         double xcorr_yy = computeXcorr(y, y, 0);

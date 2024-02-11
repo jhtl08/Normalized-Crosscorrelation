@@ -17,19 +17,33 @@ int main(int argc, char *argv[])
   inputFileName2 = argv[2];
   outputFileName = argv[3];
 
-  // Signal Import
+  // Signal x and y
   Signal x;
   Signal y;
 
+  // Signal x Import Raw Data
   x.SignalImport(inputFileName1);
   cout << endl;
+
+  // Signal y Import Raw Data
   y.SignalImport(inputFileName2);
   cout << endl;
 
+  // Computes the average and converts raw data into actual data
+  x.SignalData();
+  y.SignalData();
+
   // Compute for list of r_xy to be contained in Signal object
   Signal result = result.listXcorr(x, y);
-  result.SignalcmdPrint();
+  cout << endl;
 
-  // Export result
+  // Checks if the duration is valid for printing
+  result.SignalcmdPrint();
+  cout<< endl;
+
+  // Export the normalized crosscorrelation values
   result.SignalExport(outputFileName);
+  cout << endl;
+
+  return 0;
 }

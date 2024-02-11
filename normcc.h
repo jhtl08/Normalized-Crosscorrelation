@@ -24,18 +24,16 @@ public:
   // empty constructor
   Signal();
 
-  // non-empty constructor
-  Signal(double *signalArray, int inputStart, int inputDuration);
-
   // import function
   void SignalImport(std::string fileName);
 
   // export function
   void SignalExport(std::string fileName);
 
-  // function to print in command line when duration<20
+  // if the duration of the signal is less than 20
   void SignalcmdPrint();
 
+  // converts the raw signal into data
   void SignalData();
 
   // crosscorrelation function
