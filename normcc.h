@@ -16,9 +16,7 @@ private:
   int startIndex;
   int duration;
   int endIndex;
-  double * raw;
   double * data;
-  double * normXcorrData;
 
 public:
   // empty constructor

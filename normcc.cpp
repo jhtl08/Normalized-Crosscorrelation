@@ -14,12 +14,8 @@ Signal::Signal()
   startIndex = 0;
   duration = 1;
   endIndex = 0;
-  raw = new double[1];
-  raw[0] = 0.0;
   data = new double[1];
   data[0] = 0.0;
-  normXcorrData = new double[1];
-  normXcorrData[0] = 0.0;
 
 }
 
@@ -85,10 +81,10 @@ void Signal::SignalImport(string fileName)
 
   // convert vector to array
   // allocate memory
-  raw = new double[duration];
+  data = new double[duration];
   for (int i = 0; i < duration; i++)
   {
-    raw[i] = vect_elements[i];
+    data[i] = vect_elements[i];
   }
 
   // successful import feedback
@@ -116,7 +112,7 @@ void Signal::SignalExport(string fileName)
   osignalFile << startIndex << " ";
   for (int i = 0; i < duration; i++)
   {
-    osignalFile << normXcorrData[i] << "\n";
+    osignalFile << data[i] << "\n";
   }
   osignalFile.close();
 
@@ -135,7 +131,7 @@ void Signal::SignalcmdPrint()
     for (int i = 0; i < duration; i++)
     {
       cout << "p_xy(" << i + startIndex << ") = " 
-      << normXcorrData[i] << endl;
+      << data[i] << endl;
     }
     cout << endl;
   }
@@ -150,13 +146,13 @@ void Signal::SignalData()
   double Sum = 0;
   for (int i = 0; i < duration; i++)
   {
-    Sum += raw[i];
+    Sum += data[i];
   }
   
   double Average = Sum/duration;
   for (int i = 0; i < duration; i++)
   {
-    data[i] = raw[i] - Average;
+    data[i] = data[i] - Average;
   }
 }
 
@@ -221,18 +217,26 @@ double Signal::computeXcorr(Signal x, Signal y, int lag)
 Signal Signal::normalizedXCorr(Signal x, Signal y) {
   
     Signal result;
-    result.startIndex = -(y.duration - 1);
-    result.endIndex = x.duration - 1;
-    result.duration = endIndex - startIndex + 1;
-    result.normXcorrData = new double[result.duration];
-    result.normXcorrData[0] = 0;
+
+    int diff = abs(x.startIndex - y.startIndex);
+
+    if (y.startIndex < x.startIndex)
+    {
+      diff = -diff;
+    }
+
+    result.startIndex = -(y.duration - 1 + diff) ;
+    result.duration = y.duration + x.duration - 1;
+    result.endIndex = result.duration + result.startIndex + 1;
+    result.data = new double[result.duration];
+    result.data[0] = 0;
 
     for (int i = 0; i < result.duration; i++) {
         // Compute cross-correlation for the signals x and y
         double xcorr_xy = computeXcorr(x, y, i + result.startIndex);
         double xcorr_xx = computeXcorr(x, x, 0);
         double xcorr_yy = computeXcorr(y, y, 0);
-        result.normXcorrData[i] = xcorr_xy / sqrt(xcorr_xx * xcorr_yy);
+        result.data[i] = xcorr_xy / sqrt(xcorr_xx * xcorr_yy);
     }
 
     return result;
