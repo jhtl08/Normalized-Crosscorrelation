@@ -21,6 +21,8 @@ int main(int argc, char *argv[])
   Signal x;
   Signal y;
 
+  cout << endl;
+
   // Signal x Import Raw Data
   x.SignalImport(inputFileName1);
   cout << endl;

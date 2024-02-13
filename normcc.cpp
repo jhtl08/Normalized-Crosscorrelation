@@ -26,7 +26,8 @@ void Signal::SignalImport(string fileName)
   isignalFile.open(fileName);
   if (!isignalFile.is_open())
   { // fail import feedback
-    cout << "Unable to import a valid signal from " << fileName << endl;
+    cout << "Unable to import a valid signal from " 
+    << fileName << endl;
     return;
   }
   // parsing elements to vector
@@ -87,6 +88,7 @@ void Signal::SignalImport(string fileName)
     data[i] = vect_elements[i];
   }
 
+  //compute for the actual value
   double Sum = 0.0;
   for (int i = 0; i < duration; i++)
   {
@@ -157,33 +159,35 @@ y.endIndex += lag;
 int i = 0; // Index for x
 int j = 0; // Index for y
 
-while (x.startIndex < x.endIndex && y.startIndex < y.endIndex && i < x.duration && j < y.duration)
+while (x.startIndex < x.endIndex && y.startIndex < y.endIndex 
+&& i < x.duration && j < y.duration)
 {
-    if (x.startIndex != y.startIndex)
+  if (x.startIndex != y.startIndex)
+  {
+    // Increment the index for the array with the smaller 
+    // start index
+    if (x.startIndex > y.startIndex)
     {
-        // Increment the index for the array with the smaller start index
-        if (x.startIndex > y.startIndex)
-        {
-            j++; // Increment index for y
-            y.startIndex++; // Move y's start index
-        }
-        else // x.startIndex < y.startIndex
-        {
-            i++; // Increment index for x
-            x.startIndex++; // Move x's start index
-        }
+        j++; // Increment index for y
+        y.startIndex++; // Move y's start index
     }
-    else // x.startIndex == y.startIndex
+    else // x.startIndex < y.startIndex
     {
-        // Add the product to the sum
-        sum += x.data[i] * y.data[j];
+        i++; // Increment index for x
+        x.startIndex++; // Move x's start index
+    }
+  }
+  else // x.startIndex == y.startIndex
+  {
+    // Add the product to the sum
+    sum += x.data[i] * y.data[j];
 
-        // Move indices for both x and y
-        i++;
-        j++;
-        x.startIndex++;
-        y.startIndex++;
-    }
+    // Move indices for both x and y
+    i++;
+    j++;
+    x.startIndex++;
+    y.startIndex++;
+  }
 }
 
 return sum; // total sum is basically r_xy
@@ -191,29 +195,29 @@ return sum; // total sum is basically r_xy
 
 Signal Signal::normalizedXCorr(Signal x, Signal y) {
   
-    Signal result;
+  Signal result;
 
-    int diff = abs(x.startIndex - y.startIndex);
+  int diff = abs(x.startIndex - y.startIndex);
+  if (y.startIndex < x.startIndex)
+  {
+    diff = -diff;
+  }
 
-    if (y.startIndex < x.startIndex)
-    {
-      diff = -diff;
-    }
+  result.startIndex = -(y.duration - 1 + diff) ;
+  result.duration = y.duration + x.duration - 1;
+  result.endIndex = result.duration + result.startIndex + 1;
+  result.data = new double[result.duration];
+  result.data[0] = 0;
 
-    result.startIndex = -(y.duration - 1 + diff) ;
-    result.duration = y.duration + x.duration - 1;
-    result.endIndex = result.duration + result.startIndex + 1;
-    result.data = new double[result.duration];
-    result.data[0] = 0;
+  for (int i = 0; i < result.duration; i++) 
+  {
+    // Compute cross-correlation for the signals x and y
+    double xcorr_xy = computeXcorr(x, y, i + result.startIndex);
+    double xcorr_xx = computeXcorr(x, x, 0);
+    double xcorr_yy = computeXcorr(y, y, 0);
+    result.data[i] = xcorr_xy / sqrt(xcorr_xx * xcorr_yy);
+  }
 
-    for (int i = 0; i < result.duration; i++) {
-        // Compute cross-correlation for the signals x and y
-        double xcorr_xy = computeXcorr(x, y, i + result.startIndex);
-        double xcorr_xx = computeXcorr(x, x, 0);
-        double xcorr_yy = computeXcorr(y, y, 0);
-        result.data[i] = xcorr_xy / sqrt(xcorr_xx * xcorr_yy);
-    }
-
-    return result;
+  return result;
 }
 
