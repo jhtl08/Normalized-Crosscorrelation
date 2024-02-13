@@ -87,6 +87,18 @@ void Signal::SignalImport(string fileName)
     data[i] = vect_elements[i];
   }
 
+  double Sum = 0.0;
+  for (int i = 0; i < duration; i++)
+  {
+    Sum += data[i];
+  }
+  
+  double Average = Sum/duration;
+  for (int i = 0; i < duration; i++)
+  {
+    data[i] = data[i] - Average;
+  }
+
   // successful import feedback
   cout << "Signal with start index " << startIndex 
   << ", duration " << duration << ", imported from " 
@@ -97,6 +109,17 @@ void Signal::SignalImport(string fileName)
 
 void Signal::SignalExport(string fileName)
 {
+  if(duration<=20)
+  {
+    cout << "Normalized Crosscorrelation: " << endl;
+    for (int i = 0; i < duration; i++)
+    {
+      cout << "p_xy(" << i + startIndex << ") = " 
+      << data[i] << endl;
+    }
+    cout << endl;
+  }
+
   // creates or open, then checks the file
   ofstream osignalFile;
   osignalFile.open(fileName);
@@ -123,95 +146,47 @@ void Signal::SignalExport(string fileName)
   cout << endl;
 }
 
-void Signal::SignalcmdPrint()
-{
-  if(duration<=20)
-  {
-    cout << "Normalized Crosscorrelation: " << endl;
-    for (int i = 0; i < duration; i++)
-    {
-      cout << "p_xy(" << i + startIndex << ") = " 
-      << data[i] << endl;
-    }
-    cout << endl;
-  }
-  else
-  {
-    
-  }
-}
-
-void Signal::SignalData()
-{
-  double Sum = 0;
-  for (int i = 0; i < duration; i++)
-  {
-    Sum += data[i];
-  }
-  
-  double Average = Sum/duration;
-  for (int i = 0; i < duration; i++)
-  {
-    data[i] = data[i] - Average;
-  }
-}
-
 double Signal::computeXcorr(Signal x, Signal y, int lag)
 {
-  int xcorrEnd;
-  int xcorrStart;
-  double sum = 0;
+double sum = 0.0;
 
-  y.startIndex += lag;
-  y.endIndex += lag;
+// Move start and end indices by lag for y
+y.startIndex += lag;
+y.endIndex += lag;
 
-  if (x.endIndex < y.endIndex)
-  {
-    xcorrEnd = x.endIndex;
-  }
-  else
-  {
-    xcorrEnd = y.endIndex;
-  }
+int i = 0; // Index for x
+int j = 0; // Index for y
 
-  if (x.startIndex < y.startIndex)
-  {
-    xcorrStart = x.startIndex;
-  }
-  else
-  {
-    xcorrStart = y.startIndex;
-  }
-
-  int xcorrDuration = xcorrEnd - xcorrStart - 1;
-
-  int i = 0;
-  int j = 0;
-
-  while (i < xcorrDuration && j < xcorrDuration)
-  {
+while (x.startIndex < x.endIndex && y.startIndex < y.endIndex && i < x.duration && j < y.duration)
+{
     if (x.startIndex != y.startIndex)
     {
-      if (x.startIndex > y.startIndex)
-      {
-        j++;
-        y.startIndex++;
-      }
-      else if (x.startIndex < y.startIndex)
-      {
-        i++;
-        x.startIndex++;
-      }
+        // Increment the index for the array with the smaller start index
+        if (x.startIndex > y.startIndex)
+        {
+            j++; // Increment index for y
+            y.startIndex++; // Move y's start index
+        }
+        else // x.startIndex < y.startIndex
+        {
+            i++; // Increment index for x
+            x.startIndex++; // Move x's start index
+        }
     }
-    else
+    else // x.startIndex == y.startIndex
     {
-      sum += x.data[i] * y.data[j];
-      i++;
-      j++;
-    }
-  }
+        // Add the product to the sum
+        sum += x.data[i] * y.data[j];
 
-  return sum; // total sum is basically r_xy
+        // Move indices for both x and y
+        i++;
+        j++;
+        x.startIndex++;
+        y.startIndex++;
+    }
+}
+
+return sum; // total sum is basically r_xy
 }
 
 Signal Signal::normalizedXCorr(Signal x, Signal y) {

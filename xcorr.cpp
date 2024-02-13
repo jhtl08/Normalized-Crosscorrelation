@@ -29,17 +29,9 @@ int main(int argc, char *argv[])
   y.SignalImport(inputFileName2);
   cout << endl;
 
-  // Computes the average and converts raw data into actual data
-  x.SignalData();
-  y.SignalData();
-
   // Compute for list of r_xy to be contained in Signal object
   Signal result = result.normalizedXCorr(x, y);
   cout << endl;
-
-  // Checks if the duration is valid for printing
-  result.SignalcmdPrint();
-  cout<< endl;
 
   // Export the normalized crosscorrelation values
   result.SignalExport(outputFileName);

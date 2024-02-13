@@ -28,12 +28,6 @@ public:
   // export function
   void SignalExport(std::string fileName);
 
-  // if the duration of the signal is less than 20
-  void SignalcmdPrint();
-
-  // converts the raw signal into data
-  void SignalData();
-
   // crosscorrelation function
   double computeXcorr(Signal x, Signal y, int lag);
 
