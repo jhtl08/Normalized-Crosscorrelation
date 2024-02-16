@@ -9,13 +9,9 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   // set file names from cmd terminal
-  string inputFileName1;
-  string inputFileName2;
-  string outputFileName;
-
-  inputFileName1 = argv[1];
-  inputFileName2 = argv[2];
-  outputFileName = argv[3];
+  string inputFileName1 = argv[1];
+  string inputFileName2 = argv[2];
+  string outputFileName = argv[3];
 
   // Signal x and y
   Signal x;
@@ -23,20 +19,21 @@ int main(int argc, char *argv[])
 
   cout << endl;
 
-  // Signal x Import Raw Data
+  // Signal x Import Signal Data
   x.SignalImport(inputFileName1);
   cout << endl;
 
-  // Signal y Import Raw Data
+  // Signal y Import Signal Data
   y.SignalImport(inputFileName2);
   cout << endl;
 
-  // Compute for list of r_xy to be contained in Signal object
+  // Compute for list of P_xy to be contained in Signal object
   Signal result = result.normalizedXCorr(x, y);
   cout << endl;
 
   // Export the normalized crosscorrelation values
   result.SignalExport(outputFileName);
+
   cout << endl;
 
   return 0;
