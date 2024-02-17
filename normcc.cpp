@@ -35,43 +35,66 @@ bool Signal::SignalImport(string fileName)
   stringstream ss(line);
 
   vector<double> vect_elements;
-  // check first line if there's starting index
+
   double temp;
   if (ss >> temp)
   { // if first element is double
     vect_elements.push_back(temp);
     if (ss >> temp)
-    { // if there's another double
-      // set startIndex
-      startIndex = vect_elements[0];
-      vect_elements[0] = temp;
+    {
+      if (ss.eof())
+      {
+        startIndex = vect_elements[0];
+        vect_elements[0] = temp;
+      }
+      else
+      {
+        cout << "1Encountered nonfloat as first element in " << fileName
+        << "\nNo elements imported.\n" << endl;
+        return false;
+      }
     }
     else
     {
-      startIndex = 0;
+      if (ss.eof())
+      {
+        startIndex = 0;
+      }
+      else
+      {
+        cout << "2Encountered nonfloat as first element in " << fileName
+        << "\nNo elements imported.\n" << endl;
+        return false;
+      }
     }
   }
   else
   { // if nonfloat is encountered
-    cout << "Encountered nonfloat as first element in " << fileName
-         << "\nNo elements imported.\n" << endl;
+    cout << "3Encountered nonfloat as first element in " << fileName
+    << "\nNo elements imported.\n" << endl;
     return false;
   }
   
-  // for succeeding numbers
-  while (getline(isignalFile, line))
-  {
+  string word;
+  bool valid = true;
+
+  while (getline(isignalFile, line) && valid) {
     stringstream ss(line);
-    if (ss >> temp)
+    while (ss >> word)
     {
-      vect_elements.push_back(temp);
-    }
-    else
-    { // when encountering nonfloat or eof
-      cout << "Parsing of input from " << fileName 
-      << " stopped at duration " << vect_elements.size() 
-      << " due to nonfloat/new line." << endl;
-      break;
+      stringstream ss2(word);
+      if (ss2 >> temp)
+      {
+        if (ss2.eof())
+        {
+          vect_elements.push_back(temp);
+        }
+        else
+        {
+          valid = false;
+          break;
+        }
+      }
     }
   }
 
