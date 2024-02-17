@@ -4,6 +4,7 @@
 // February 5, 2022
 
 #include "normcc.h"
+
 using namespace std;
 
 int main(int argc, char *argv[])
@@ -20,12 +21,13 @@ int main(int argc, char *argv[])
   cout << endl;
 
   // Signal x Import Signal Data
-  x.SignalImport(inputFileName1);
-  cout << endl;
+  bool checkXimport = x.SignalImport(inputFileName1);
+  bool checkYimport = y.SignalImport(inputFileName2);
 
-  // Signal y Import Signal Data
-  y.SignalImport(inputFileName2);
-  cout << endl;
+  if (!checkXimport || !checkYimport)
+  {
+    return 0;
+  } 
 
   // Compute for list of P_xy to be contained in Signal object
   Signal result = result.normalizedXCorr(x, y);

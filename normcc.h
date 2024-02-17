@@ -10,6 +10,8 @@
 #include <iostream>
 #include <vector>
 
+using namespace std;
+
 class Signal
 {
 private:
@@ -23,10 +25,10 @@ public:
   Signal();
 
   // import function
-  void SignalImport(std::string fileName);
+  bool SignalImport(string fileName);
 
   // export function
-  void SignalExport(std::string fileName);
+  void SignalExport(string fileName);
 
   // crosscorrelation function
   double computeXcorr(Signal x, Signal y, int lag);

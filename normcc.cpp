@@ -18,7 +18,7 @@ Signal::Signal()
   data[0] = 0.0;
 }
 
-void Signal::SignalImport(string fileName)
+bool Signal::SignalImport(string fileName)
 {
   // opens and checks the files
   ifstream isignalFile;
@@ -27,7 +27,7 @@ void Signal::SignalImport(string fileName)
   { // fail import feedback
     cout << "Unable to import a valid signal from " 
     << fileName << endl;
-    return;
+    return false;
   }
   // parsing elements to vector
   string line;
@@ -54,7 +54,8 @@ void Signal::SignalImport(string fileName)
   else
   { // if nonfloat is encountered
     cout << "Encountered nonfloat as first element in " << fileName
-         << "\nNo elements imported.";
+         << "\nNo elements imported.\n" << endl;
+    return false;
   }
   
   // for succeeding numbers
@@ -107,9 +108,10 @@ void Signal::SignalImport(string fileName)
   // successful import feedback
   cout << "Signal with start index " << startIndex 
   << ", duration " << duration << ", imported from " 
-  << fileName << endl;
+  << fileName << "\n" << endl;
 
   isignalFile.close();
+  return true;
 }
 
 void Signal::SignalExport(string fileName)
@@ -149,6 +151,7 @@ void Signal::SignalExport(string fileName)
   << startIndex << ", duration " << duration << ", exported to " 
   << fileName << endl;
   cout << endl;
+  return;
 }
 
 double Signal::computeXcorr(Signal x, Signal y, int lag) 
@@ -160,8 +163,8 @@ double Signal::computeXcorr(Signal x, Signal y, int lag)
   y.endIndex += lag;
 
   // Determine the index for each signal
-  int indexX = 0; // Index for signal x
-  int indexY = 0; // Index for signal y
+  int indexX = 0; 
+  int indexY = 0; 
 
   // Compute the difference between starting indices
   int startIndexDiff = abs(x.startIndex - y.startIndex);
@@ -177,7 +180,8 @@ double Signal::computeXcorr(Signal x, Signal y, int lag)
   }
 
   // Compute for the cross correlation
-  for (; indexX < x.duration && indexY < y.duration; indexX++, indexY++)
+  for (; indexX < x.duration && indexY < y.duration; 
+  indexX++, indexY++)
   {
     // Add product of signal values to sum
     sum += x.data[indexX] * y.data[indexY];
