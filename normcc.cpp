@@ -32,69 +32,85 @@ bool Signal::SignalImport(string fileName)
   // parsing elements to vector
   string line;
   getline(isignalFile, line);
-  stringstream ss(line);
 
   vector<double> vect_elements;
 
   double temp;
-  if (ss >> temp)
-  { // if first element is double
-    vect_elements.push_back(temp);
-    if (ss >> temp)
+  string word1, word2, word3;
+  stringstream ss(line);
+
+  ss >> word1;
+  stringstream ss1(word1);
+  if (ss1 >> temp)
+  {
+    if (ss1.eof())
     {
-      if (ss.eof())
-      {
+      vect_elements.push_back(temp);
+    }
+    else
+    {
+      cout << "Parsing of input from " << fileName 
+      << " stopped at duration " << vect_elements.size() 
+      << " due to invalid element.\n" << endl;
+      return false;
+    }
+  }
+  else
+  {
+    cout << "Parsing of input from " << fileName 
+    << " stopped at duration " << vect_elements.size() 
+    << " due to invalid element.\n" << endl;
+    return false;
+  }
+
+  ss >> word2;
+  stringstream ss2(word2);
+  if (ss2 >> temp)
+  {
+    if (ss2.eof())
+    {
         startIndex = vect_elements[0];
         vect_elements[0] = temp;
+    }
+    else
+    {
+      cout << "Parsing of input from " << fileName 
+      << " stopped at duration " << vect_elements.size() 
+      << " due to invalid element.\n" << endl;
+      return false;
+    }
+  }
+  else
+  {
+    startIndex = 0;
+  }
+
+  while (getline(isignalFile, line)) 
+  {
+    stringstream ss3(line);
+    ss3 >> word3;
+    
+    stringstream ss4(word3);
+    if (ss4 >> temp)
+    {
+      if (ss4.eof())
+      {
+        vect_elements.push_back(temp);
       }
       else
       {
-        cout << "1Encountered nonfloat as first element in " << fileName
-        << "\nNo elements imported.\n" << endl;
-        return false;
+        cout << "Parsing of input from " << fileName 
+        << " stopped at duration " << vect_elements.size() 
+        << " due to invalid element." << endl;
+        break;
       }
     }
     else
     {
-      if (ss.eof())
-      {
-        startIndex = 0;
-      }
-      else
-      {
-        cout << "2Encountered nonfloat as first element in " << fileName
-        << "\nNo elements imported.\n" << endl;
-        return false;
-      }
-    }
-  }
-  else
-  { // if nonfloat is encountered
-    cout << "3Encountered nonfloat as first element in " << fileName
-    << "\nNo elements imported.\n" << endl;
-    return false;
-  }
-  
-  string word;
-  bool valid = true;
-
-  while (getline(isignalFile, line) && valid) {
-    stringstream ss(line);
-    while (ss >> word)
-    {
-      stringstream ss2(word);
-      if (ss2 >> temp)
-      {
-        if (ss2.eof())
-        {
-          vect_elements.push_back(temp);
-        }
-        else
-        {
-          valid = false;
-          break;
-        }
-      }
+      cout << "Parsing of input from " << fileName 
+        << " stopped at duration " << vect_elements.size() 
+        << " due to invalid element." << endl;
+        break;
     }
   }
 
