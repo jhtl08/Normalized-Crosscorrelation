@@ -1,7 +1,7 @@
 // normcc.cpp
 // Kyle Coloma, Jason Lorenzo
 // ENGG 151.01-A
-// February 5, 2022
+// February 18, 2024
 
 #include "normcc.h"
 #include <sstream>
@@ -41,63 +41,62 @@ bool Signal::SignalImport(string fileName)
 
   ss >> word1;
   stringstream ss1(word1);
-  if (ss1 >> temp)
+  if (ss1 >> temp) // Ex. '-4' '-4a'
   {
-    if (ss1.eof())
+    if (ss1.eof()) // Ex. '-4'
     {
       vect_elements.push_back(temp);
     }
-    else
+    else // Ex. '-4a'
     {
-      cout << "Parsing of input from " << fileName 
-      << " stopped at duration " << vect_elements.size() 
-      << " due to invalid element.\n" << endl;
+      cout << "Encountered nonfloat as first element in " << fileName
+      << "\nNo elements imported.\n" << endl;
       return false;
     }
   }
-  else
+  else // Ex. 'a'
   {
-    cout << "Parsing of input from " << fileName 
-    << " stopped at duration " << vect_elements.size() 
-    << " due to invalid element.\n" << endl;
+    cout << "Encountered nonfloat as first element in " << fileName
+    << "\nNo elements imported.\n" << endl;
     return false;
   }
 
+  // Check if there is another double
   ss >> word2;
   stringstream ss2(word2);
-  if (ss2 >> temp)
+  if (ss2 >> temp) // Ex. '-4' '-4a'
   {
-    if (ss2.eof())
+    if (ss2.eof()) // Ex. '-4'
     {
-        startIndex = vect_elements[0];
-        vect_elements[0] = temp;
+      startIndex = vect_elements[0];
+      vect_elements[0] = temp;
     }
-    else
+    else // Ex. '-4a'
     {
-      cout << "Parsing of input from " << fileName 
-      << " stopped at duration " << vect_elements.size() 
-      << " due to invalid element.\n" << endl;
+      cout << "Encountered nonfloat as first element in " << fileName
+      << "\nNo elements imported.\n" << endl;
       return false;
     }
   }
-  else
+  else // Ex. comment
   {
-    startIndex = 0;
+    startIndex = 0; // No specified starting index
   }
-
+  
+  // Check valid values
   while (getline(isignalFile, line)) 
   {
     stringstream ss3(line);
     ss3 >> word3;
-    
+
     stringstream ss4(word3);
     if (ss4 >> temp)
     {
-      if (ss4.eof())
+      if (ss4.eof()) // Ex. '4'
       {
         vect_elements.push_back(temp);
       }
-      else
+      else // Ex. '4a'
       {
         cout << "Parsing of input from " << fileName 
         << " stopped at duration " << vect_elements.size() 
@@ -105,7 +104,7 @@ bool Signal::SignalImport(string fileName)
         break;
       }
     }
-    else
+    else // Ex. 'a'
     {
       cout << "Parsing of input from " << fileName 
         << " stopped at duration " << vect_elements.size() 
@@ -120,12 +119,13 @@ bool Signal::SignalImport(string fileName)
   // compute endIndex
   endIndex = duration + startIndex + 1;
 
-  // convert vector to array
-  // allocate memory
+  // allocate memoery
   data = new double[duration];
+
+  // convert vector to array
   for (int i = 0; i < duration; i++)
   {
-    data[i] = vect_elements[i];
+    data[i] = vect_elements[i]; 
   }
 
   // compute for the sum

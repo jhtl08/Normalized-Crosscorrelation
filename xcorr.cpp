@@ -1,7 +1,7 @@
 // xcorr.cpp
 // Kyle Coloma, Jason Lorenzo
 // ENGG 151.01-A
-// February 5, 2022
+// February 18, 2024
 
 #include "normcc.h"
 
@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
   bool checkXimport = x.SignalImport(inputFileName1);
   bool checkYimport = y.SignalImport(inputFileName2);
 
+  // Check if valid
   if (!checkXimport || !checkYimport)
   {
     return 0;

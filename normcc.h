@@ -1,7 +1,7 @@
 // normcc.h
 // Kyle Coloma, Jason Lorenzo
 // ENGG 151.01-A
-// February 11, 2022
+// February 18, 2024
 
 #ifndef NORMCCHEADERDEF
 #define NORMCCHEADERDEF
