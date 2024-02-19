@@ -157,11 +157,10 @@ void Signal::SignalExport(string fileName)
 {
   if(duration<=20)
   {
-    cout << "Normalized Crosscorrelation: " << endl;
+    cout << startIndex << " ";
     for (int i = 0; i < duration; i++)
     {
-      cout << "p_xy(" << i + startIndex << ") = " 
-      << data[i] << endl;
+      cout << data[i] << "\n";
     }
     cout << endl;
   }
@@ -189,7 +188,6 @@ void Signal::SignalExport(string fileName)
   cout << "Normalized Crosscorrelation signal with start index " 
   << startIndex << ", duration " << duration << ", exported to " 
   << fileName << endl;
-  cout << endl;
   return;
 }
 

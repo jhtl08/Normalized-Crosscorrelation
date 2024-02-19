@@ -15,24 +15,19 @@ int main(int argc, char *argv[])
   string outputFileName = argv[3];
 
   // Signal x and y
-  Signal x;
+  Signal x; 
   Signal y;
 
   cout << endl;
 
-  // Signal x Import Signal Data
-  bool checkXimport = x.SignalImport(inputFileName1);
-  bool checkYimport = y.SignalImport(inputFileName2);
-
-  // Check if valid
-  if (!checkXimport || !checkYimport)
+  // Import and Check Import
+  if (!x.SignalImport(inputFileName1) || !y.SignalImport(inputFileName2))
   {
     return 0;
   } 
 
   // Compute for list of P_xy to be contained in Signal object
   Signal result = result.normalizedXCorr(x, y);
-  cout << endl;
 
   // Export the normalized crosscorrelation values
   result.SignalExport(outputFileName);
