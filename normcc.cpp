@@ -25,8 +25,8 @@ bool Signal::SignalImport(string fileName)
   isignalFile.open(fileName);
   if (!isignalFile.is_open())
   { // fail import feedback
-    cout << "Unable to import a valid signal from " 
-    << fileName << endl;
+    cout << "Unable to import a valid signal from "
+         << fileName << endl;
     return false;
   }
   // parsing elements to vector
@@ -36,11 +36,11 @@ bool Signal::SignalImport(string fileName)
   vector<double> vect_elements;
 
   double temp;
-  string word1, word2, word3;
+  string word;
   stringstream ss(line);
 
-  ss >> word1;
-  stringstream ss1(word1);
+  ss >> word;
+  stringstream ss1(word);
   if (ss1 >> temp) // Ex. '-4' '-4a'
   {
     if (ss1.eof()) // Ex. '-4'
@@ -50,20 +50,22 @@ bool Signal::SignalImport(string fileName)
     else // Ex. '-4a'
     {
       cout << "Encountered nonfloat as first element in " << fileName
-      << "\nNo elements imported.\n" << endl;
+           << "\nNo elements imported.\n"
+           << endl;
       return false;
     }
   }
   else // Ex. 'a'
   {
     cout << "Encountered nonfloat as first element in " << fileName
-    << "\nNo elements imported.\n" << endl;
+         << "\nNo elements imported.\n"
+         << endl;
     return false;
   }
 
   // Check if there is another double
-  ss >> word2;
-  stringstream ss2(word2);
+  ss >> word;
+  stringstream ss2(word);
   if (ss2 >> temp) // Ex. '-4' '-4a'
   {
     if (ss2.eof()) // Ex. '-4'
@@ -74,7 +76,8 @@ bool Signal::SignalImport(string fileName)
     else // Ex. '-4a'
     {
       cout << "Encountered nonfloat as first element in " << fileName
-      << "\nNo elements imported.\n" << endl;
+           << "\nNo elements imported.\n"
+           << endl;
       return false;
     }
   }
@@ -82,14 +85,21 @@ bool Signal::SignalImport(string fileName)
   {
     startIndex = 0; // No specified starting index
   }
-  
-  // Check valid values
-  while (getline(isignalFile, line)) 
-  {
-    stringstream ss3(line);
-    ss3 >> word3;
 
-    stringstream ss4(word3);
+  // Check valid values
+  while (getline(isignalFile, line))
+  {
+    if (line.empty())
+    {
+      cout << "Parsing of input from " << fileName
+           << " stopped at duration " << vect_elements.size()
+           << " due to an empty line." << endl;
+      break;
+    }
+    stringstream ss3(line);
+    ss3 >> word;
+
+    stringstream ss4(word);
     if (ss4 >> temp)
     {
       if (ss4.eof()) // Ex. '4'
@@ -98,18 +108,18 @@ bool Signal::SignalImport(string fileName)
       }
       else // Ex. '4a'
       {
-        cout << "Parsing of input from " << fileName 
-        << " stopped at duration " << vect_elements.size() 
-        << " due to invalid element." << endl;
+        cout << "Parsing of input from " << fileName
+             << " stopped at duration " << vect_elements.size()
+             << " due to invalid element." << endl;
         break;
       }
     }
     else // Ex. 'a'
     {
-      cout << "Parsing of input from " << fileName 
-        << " stopped at duration " << vect_elements.size() 
-        << " due to invalid element." << endl;
-        break;
+      cout << "Parsing of input from " << fileName
+           << " stopped at duration " << vect_elements.size()
+           << " due to invalid element." << endl;
+      break;
     }
   }
 
@@ -119,35 +129,36 @@ bool Signal::SignalImport(string fileName)
   // compute endIndex
   endIndex = duration + startIndex + 1;
 
-  // allocate memoery
+  // allocate memory
   data = new double[duration];
 
   // convert vector to array
   for (int i = 0; i < duration; i++)
   {
-    data[i] = vect_elements[i]; 
+    data[i] = vect_elements[i];
   }
 
   // compute for the sum
   double Sum = 0.0;
   for (int i = 0; i < duration; i++)
   {
-    Sum += data[i]; 
+    Sum += data[i];
   }
-  
-  // compute for the average
-  double Average = Sum/duration;
 
-  // compute for the actual value
+  // compute for the average
+  double Average = Sum / duration;
+
+  // normalize
   for (int i = 0; i < duration; i++)
   {
     data[i] -= Average;
   }
 
   // successful import feedback
-  cout << "Signal with start index " << startIndex 
-  << ", duration " << duration << ", imported from " 
-  << fileName << "\n" << endl;
+  cout << "Signal with start index " << startIndex
+       << ", duration " << duration << ", imported from "
+       << fileName << "\n"
+       << endl;
 
   isignalFile.close();
   return true;
@@ -155,7 +166,7 @@ bool Signal::SignalImport(string fileName)
 
 void Signal::SignalExport(string fileName)
 {
-  if(duration<=20)
+  if (duration <= 20)
   {
     cout << startIndex << " ";
     for (int i = 0; i < duration; i++)
@@ -170,9 +181,9 @@ void Signal::SignalExport(string fileName)
   osignalFile.open(fileName);
   if (!osignalFile.is_open())
   { // fail export feedback
-    cout << "Unable to export signal with start index " 
-    << startIndex << ", duration " << duration << ", to " 
-    << fileName << endl;
+    cout << "Unable to export signal with start index "
+         << startIndex << ", duration " << duration << ", to "
+         << fileName << endl;
     return;
   }
 
@@ -185,13 +196,13 @@ void Signal::SignalExport(string fileName)
   osignalFile.close();
 
   // successful exporting feedvack
-  cout << "Normalized Crosscorrelation signal with start index " 
-  << startIndex << ", duration " << duration << ", exported to " 
-  << fileName << endl;
+  cout << "Normalized Crosscorrelation signal with start index "
+       << startIndex << ", duration " << duration << ", exported to "
+       << fileName << endl;
   return;
 }
 
-double Signal::computeXcorr(Signal x, Signal y, int lag) 
+double Signal::computeXcorr(Signal x, Signal y, int lag)
 {
   double sum = 0.0; // Initialize sum
 
@@ -200,25 +211,25 @@ double Signal::computeXcorr(Signal x, Signal y, int lag)
   y.endIndex += lag;
 
   // Determine the index for each signal
-  int indexX = 0; 
-  int indexY = 0; 
+  int indexX = 0;
+  int indexY = 0;
 
   // Compute the difference between starting indices
   int startIndexDiff = abs(x.startIndex - y.startIndex);
 
   // Adjust starting indices to align signals
-  if (x.startIndex < y.startIndex) 
+  if (x.startIndex < y.startIndex)
   {
     indexX += startIndexDiff;
   }
-  if (y.startIndex < x.startIndex) 
+  else if (y.startIndex < x.startIndex)
   {
     indexY += startIndexDiff;
   }
 
   // Compute for the cross correlation
-  for (; indexX < x.duration && indexY < y.duration; 
-  indexX++, indexY++)
+  for (; indexX < x.duration && indexY < y.duration;
+       indexX++, indexY++)
   {
     // Add product of signal values to sum
     sum += x.data[indexX] * y.data[indexY];
@@ -227,7 +238,7 @@ double Signal::computeXcorr(Signal x, Signal y, int lag)
   return sum; // Return cross-correlation
 }
 
-Signal Signal::normalizedXCorr(Signal x, Signal y) 
+Signal Signal::normalizedXCorr(Signal x, Signal y)
 {
   Signal result;
 
@@ -245,9 +256,9 @@ Signal Signal::normalizedXCorr(Signal x, Signal y)
   result.data = new double[result.duration];
   result.data[0] = 0.0;
 
-  // Compute for the normalized cross-correlation 
+  // Compute for the normalized cross-correlation
   // for all applicable l (Lag)
-  for (int i = 0; i < result.duration; i++) 
+  for (int i = 0; i < result.duration; i++)
   {
     // Compute cross-correlation for the signals x and y
     double xcorr_xy = computeXcorr(x, y, i + result.startIndex);
@@ -264,4 +275,3 @@ Signal Signal::normalizedXCorr(Signal x, Signal y)
 
   return result;
 }
-

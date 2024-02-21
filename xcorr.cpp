@@ -15,16 +15,17 @@ int main(int argc, char *argv[])
   string outputFileName = argv[3];
 
   // Signal x and y
-  Signal x; 
+  Signal x;
   Signal y;
 
   cout << endl;
 
   // Import and Check Import
-  if (!x.SignalImport(inputFileName1) || !y.SignalImport(inputFileName2))
+  if (!x.SignalImport(inputFileName1) ||
+      !y.SignalImport(inputFileName2))
   {
     return 0;
-  } 
+  }
 
   // Compute for list of P_xy to be contained in Signal object
   Signal result = result.normalizedXCorr(x, y);
@@ -36,4 +37,3 @@ int main(int argc, char *argv[])
 
   return 0;
 }
-
