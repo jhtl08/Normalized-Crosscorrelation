@@ -62,6 +62,8 @@ bool Signal::SignalImport(string fileName)
          << endl;
     return false;
   }
+  // Clear the word to reuse it
+  word.clear();
 
   // Check if there is another double
   ss >> word;
@@ -85,6 +87,8 @@ bool Signal::SignalImport(string fileName)
   {
     startIndex = 0; // No specified starting index
   }
+  // Clear the word to reuse it
+  word.clear();
 
   // Check valid values
   while (getline(isignalFile, line))
@@ -96,6 +100,7 @@ bool Signal::SignalImport(string fileName)
            << " due to an empty line." << endl;
       break;
     }
+
     stringstream ss3(line);
     ss3 >> word;
 
@@ -121,6 +126,7 @@ bool Signal::SignalImport(string fileName)
            << " due to invalid element." << endl;
       break;
     }
+    word.clear();
   }
 
   // set duration
@@ -257,18 +263,19 @@ Signal Signal::normalizedXCorr(Signal x, Signal y)
   result.data[0] = 0.0;
 
   // Compute for the normalized cross-correlation
+
+  // This part only needs to computed once
+  // Compute cross-correlation for the signals x and x
+  double xcorr_xx = computeXcorr(x, x, 0);
+
+  // Compute cross-correlation for the signals y and y
+  double xcorr_yy = computeXcorr(y, y, 0);
+
   // for all applicable l (Lag)
   for (int i = 0; i < result.duration; i++)
   {
     // Compute cross-correlation for the signals x and y
     double xcorr_xy = computeXcorr(x, y, i + result.startIndex);
-
-    // Compute cross-correlation for the signals x and x
-    double xcorr_xx = computeXcorr(x, x, 0);
-
-    // Compute cross-correlation for the signals y and y
-    double xcorr_yy = computeXcorr(y, y, 0);
-
     // Compute normalized cross-correlation
     result.data[i] = xcorr_xy / sqrt(xcorr_xx * xcorr_yy);
   }

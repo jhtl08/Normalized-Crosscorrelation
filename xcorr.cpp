@@ -20,9 +20,12 @@ int main(int argc, char *argv[])
 
   cout << endl;
 
-  // Import and Check Import
-  if (!x.SignalImport(inputFileName1) ||
-      !y.SignalImport(inputFileName2))
+  // Signal x Import Signal Data
+  bool checkXimport = x.SignalImport(inputFileName1);
+  bool checkYimport = y.SignalImport(inputFileName2);
+
+  // Check if valid
+  if (!checkXimport || !checkYimport)
   {
     return 0;
   }
