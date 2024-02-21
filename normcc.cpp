@@ -172,7 +172,7 @@ bool Signal::SignalImport(string fileName)
 
 void Signal::SignalExport(string fileName)
 {
-  if (duration <= 20)
+  if (duration < 20)
   {
     cout << startIndex << " ";
     for (int i = 0; i < duration; i++)
