@@ -1,7 +1,7 @@
 // xcorr.cpp
 // Kyle Coloma, Jason Lorenzo
 // ENGG 151.01-A
-// February 21, 2024
+// February 26, 2024
 
 #include "normcc.h"
 

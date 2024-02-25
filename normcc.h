@@ -1,7 +1,7 @@
 // normcc.h
 // Kyle Coloma, Jason Lorenzo
 // ENGG 151.01-A
-// February 21, 2024
+// February 26, 2024
 
 #ifndef NORMCCHEADERDEF
 #define NORMCCHEADERDEF
@@ -18,7 +18,7 @@ private:
   int startIndex;
   int duration;
   int endIndex;
-  double * data;
+  double *data;
 
 public:
   // empty constructor
@@ -38,6 +38,3 @@ public:
 };
 
 #endif
-
-
-

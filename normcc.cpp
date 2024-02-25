@@ -1,7 +1,7 @@
 // normcc.cpp
 // Kyle Coloma, Jason Lorenzo
 // ENGG 151.01-A
-// February 21, 2024
+// February 26, 2024
 
 #include "normcc.h"
 #include <sstream>
@@ -174,6 +174,7 @@ void Signal::SignalExport(string fileName)
 {
   if (duration < 20)
   {
+    cout << "Normalized Crosscorrelation: " << endl;
     cout << startIndex << " ";
     for (int i = 0; i < duration; i++)
     {
@@ -271,13 +272,16 @@ Signal Signal::normalizedXCorr(Signal x, Signal y)
   // Compute cross-correlation for the signals y and y
   double xcorr_yy = computeXcorr(y, y, 0);
 
+  // Compute for the denominator of normalized crosscorrelation
+  double denominator = sqrt(xcorr_xx * xcorr_yy);
+
   // for all applicable l (Lag)
   for (int i = 0; i < result.duration; i++)
   {
     // Compute cross-correlation for the signals x and y
     double xcorr_xy = computeXcorr(x, y, i + result.startIndex);
     // Compute normalized cross-correlation
-    result.data[i] = xcorr_xy / sqrt(xcorr_xx * xcorr_yy);
+    result.data[i] = xcorr_xy / denominator;
   }
 
   return result;
